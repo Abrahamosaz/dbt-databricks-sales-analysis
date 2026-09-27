@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_categories
+    description: Cleaned product categories. One row per category.
+    columns:
+      - name: category_id
+        data_tests: [unique, not_null]
+
+  - name: stg_customers
+    description: Cleaned customers. One row per customer.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: email
+        description: Lower-cased, trimmed email.
+        data_tests: [unique, not_null]
+
+  - name: stg_products
+    description: Cleaned product catalog (current snapshot of price and stock). One row per product.
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: list_price
+        description: Current list price in NGN.
+        data_tests: [positive_value]
+      - name: stock_quantity
+        data_tests:
+          - positive_value:
+              arguments:
+                allow_zero: true
+
+  - name: stg_order_items
+    description: Order line items with local-time fields and line revenue. One row per order item.
+    columns:
+      - name: order_item_id
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests: [not_null]
+      - name: ordered_at
+        description: Order timestamp (absolute instant; source was UTC+01:00).
+      - name: ordered_at_local
+        description: Order timestamp as wall-clock time in the reporting timezone.
+      - name: order_date_local
+        description: Calendar date of the order in the reporting timezone.
+      - name: quantity
+        data_tests: [positive_value]
+      - name: unit_price
+        description: Price paid per unit at time of purchase (NGN).
+        data_tests: [positive_value]
+      - name: line_revenue
+        description: quantity * unit_price (NGN).

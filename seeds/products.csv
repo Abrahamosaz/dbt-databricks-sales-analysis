@@ -9,8 +9,8 @@ product_id,product_name,category_id,price,stock_quantity
 8,Apple AirPods Pro,4,380000.00,50
 9,JBL Bluetooth Speaker,4,180000.00,60
 10,Anker Power Bank,4,95000.00,100
-11,"Samsung 55\" TV",1,900000.00,15
-12,"LG Smart TV 50\"",1,720000.00,18
+11,"Samsung 55"" TV",1,900000.00,15
+12,"LG Smart TV 50""",1,720000.00,18
 13,LG Refrigerator,5,1100000.00,8
 14,Samsung Microwave,5,280000.00,20
 15,Nexus Blender,5,120000.00,35

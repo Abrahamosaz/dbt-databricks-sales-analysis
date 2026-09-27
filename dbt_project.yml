@@ -30,6 +30,13 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   dbt_databricks_sales_analysis:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+    staging:
       +materialized: view
+    intermediate:
+      +materialized: view
+    mart:
+      +materialized: table
+
+vars:
+  # Business timezone used to derive local order dates and reporting months.
+  reporting_timezone: 'Africa/Lagos'

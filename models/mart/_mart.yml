@@ -1,0 +1,152 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    description: >
+      Line-level sales fact. Grain is one row per order item. Revenue covers
+      COMPLETED orders only (the source contains no other statuses; gaps in
+      order_id / order_item_id suggest non-completed orders were removed upstream).
+    columns:
+      - name: order_item_id
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+      - name: product_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: category_id
+        data_tests: [not_null]
+      - name: order_month
+        description: First day of the order month in the reporting timezone.
+      - name: unit_price
+        description: Price paid per unit (NGN). Use this, not list_price, for revenue.
+      - name: list_price
+        description: Current catalog price (NGN), for comparison with unit_price.
+      - name: line_revenue
+        description: quantity * unit_price (NGN).
+
+  - name: fct_orders
+    description: Order-level sales fact. Grain is one row per order.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_revenue
+        description: Sum of line revenue on the order (NGN).
+        data_tests: [positive_value]
+      - name: customer_order_number
+        description: Sequence of this order within the customer's history (1 = first order).
+      - name: is_first_order
+        description: True when this is the customer's first order.
+      - name: days_since_previous_order
+        description: Days since the customer's previous order; null for first orders.
+
+  - name: dim_customers
+    description: >
+      Customer dimension with lifetime metrics. Grain is one row per registered
+      customer, including customers who have never ordered.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: lifetime_orders
+        description: Number of orders placed (0 if never ordered).
+      - name: lifetime_revenue
+        description: Total revenue from the customer (NGN).
+      - name: avg_order_value
+        description: lifetime_revenue / lifetime_orders; null if never ordered.
+      - name: days_signup_to_first_order
+        description: Days from signup to first order; null if never ordered.
+      - name: avg_days_between_orders
+        description: Average gap between consecutive orders; null for fewer than 2 orders.
+      - name: has_ordered
+        description: False for registered customers with no orders (activation targets).
+      - name: is_repeat_customer
+        description: True when the customer has more than one order.
+      - name: revenue_rank
+        description: Rank by lifetime revenue among customers who have ordered (1 = highest).
+      - name: revenue_share
+        description: Customer's share of total revenue.
+      - name: is_top_20_pct
+        description: True for the top 20% of buying customers by revenue.
+
+  - name: dim_products
+    description: Product dimension with sales and inventory metrics. Grain is one row per product.
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: category_name
+        data_tests: [not_null]
+      - name: stock_value
+        description: list_price * stock_quantity (NGN).
+      - name: has_sales
+        description: False for products that have never been sold.
+      - name: sell_through_rate
+        description: units_sold / (units_sold + stock_quantity).
+      - name: avg_daily_units_sold
+        description: Units sold per day over the observed sales window.
+      - name: estimated_days_of_cover
+        description: >
+          stock_quantity / avg_daily_units_sold. Estimate only: stock is a current
+          snapshot, not history. Null for products with no sales.
+
+  - name: mart_monthly_sales
+    description: Monthly sales KPIs. Grain is one row per month (reporting timezone).
+    columns:
+      - name: order_month
+        data_tests: [unique, not_null]
+      - name: new_customers
+        description: Customers whose first order fell in this month.
+      - name: avg_order_value
+        description: revenue / orders (NGN).
+      - name: revenue_mom_pct
+        description: Month-over-month revenue change as a fraction (0.1 = +10%).
+      - name: cumulative_revenue
+        description: Running total of revenue.
+
+  - name: mart_sales_by_city
+    description: Sales by customer city. Grain is one row per city with orders.
+    columns:
+      - name: city
+        data_tests: [unique, not_null]
+
+  - name: mart_sales_by_payment_method
+    description: Sales by payment method. Grain is one row per payment method.
+    columns:
+      - name: payment_method
+        data_tests: [unique, not_null]
+
+  - name: mart_sales_by_category
+    description: Sales and inventory by category. Grain is one row per category.
+    columns:
+      - name: category_id
+        data_tests: [unique, not_null]
+      - name: stock_value
+        description: Value of current stock at list price (NGN).
+
+  - name: mart_product_affinity
+    description: >
+      Products bought together. Grain is one row per unordered product pair
+      (product_a_id < product_b_id) that appears together in at least one order.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: [product_a_id, product_b_id]
+    columns:
+      - name: orders_together
+        description: Number of orders containing both products.
+      - name: pct_of_product_a_orders
+        description: Share of product A's orders that also contained product B.

@@ -1,0 +1,158 @@
+version: 2
+
+seeds:
+  - name: categories
+    description: Product categories used to group items in the catalog. One row per category.
+    config:
+      column_types:
+        category_id: int
+        category_name: string
+    columns:
+      - name: category_id
+        description: Primary key for the category.
+        data_tests:
+          - unique
+          - not_null
+      - name: category_name
+        description: Display name of the category (e.g. Electronics, Phones).
+        data_tests:
+          - unique
+          - not_null
+
+  - name: customers
+    description: Registered customers of the store. One row per customer.
+    config:
+      column_types:
+        customer_id: int
+        first_name: string
+        last_name: string
+        email: string
+        city: string
+        country: string
+        signup_date: date
+    columns:
+      - name: customer_id
+        description: Primary key for the customer.
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: Customer's first name.
+      - name: last_name
+        description: Customer's last name.
+      - name: email
+        description: Customer's email address.
+        data_tests:
+          - unique
+          - not_null
+      - name: city
+        description: City where the customer is located.
+      - name: country
+        description: Country where the customer is located.
+      - name: signup_date
+        description: Date the customer created their account.
+        data_tests:
+          - not_null
+
+  - name: products
+    description: Product catalog with current list price and stock level. One row per product.
+    config:
+      column_types:
+        product_id: int
+        product_name: string
+        category_id: int
+        price: decimal(12,2)
+        stock_quantity: int
+    columns:
+      - name: product_id
+        description: Primary key for the product.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Name of the product.
+        data_tests:
+          - not_null
+      - name: category_id
+        description: Foreign key to the category the product belongs to.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('categories')
+                field: category_id
+      - name: price
+        description: Current list price of the product, in NGN.
+        data_tests:
+          - not_null
+      - name: stock_quantity
+        description: Units currently in stock.
+
+  - name: orders
+    description: >
+      Order line items. One row per order item, so an order with several
+      products appears on multiple rows sharing the same order_id and
+      order-level attributes (customer, date, status, payment method).
+    config:
+      column_types:
+        order_id: int
+        customer_id: int
+        order_date: timestamp
+        status: string
+        payment_method: string
+        order_item_id: int
+        product_id: int
+        quantity: int
+        unit_price: decimal(12,2)
+    columns:
+      - name: order_id
+        description: Identifier of the order. Not unique in this table, since each order can have multiple line items.
+        data_tests:
+          - not_null
+      - name: customer_id
+        description: Foreign key to the customer who placed the order.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('customers')
+                field: customer_id
+      - name: order_date
+        description: Timestamp when the order was placed (source data is in UTC+01:00).
+        data_tests:
+          - not_null
+      - name: status
+        description: Order status.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['COMPLETED']
+      - name: payment_method
+        description: How the customer paid for the order.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['CARD', 'TRANSFER', 'CASH']
+      - name: order_item_id
+        description: Primary key for the order line item.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: Foreign key to the product purchased on this line.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('products')
+                field: product_id
+      - name: quantity
+        description: Number of units of the product purchased on this line.
+        data_tests:
+          - not_null
+      - name: unit_price
+        description: Price per unit at the time of purchase, in NGN.
+        data_tests:
+          - not_null

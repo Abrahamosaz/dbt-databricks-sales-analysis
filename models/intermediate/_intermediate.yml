@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_orders
+    description: One row per order, aggregated from line items.
+    columns:
+      - name: order_id
+        description: >
+          Must be unique. A duplicate means line items of the same order disagree
+          on an order-level attribute (customer, timestamp, status, payment method).
+        data_tests: [unique, not_null]
+
+  - name: int_customer_orders
+    description: int_orders with per-customer order sequence and gap since previous order.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_order_number
+        description: 1 for the customer's first order, 2 for the second, etc.
+      - name: days_since_previous_order
+        description: Days between this and the customer's previous order (null for first orders).
