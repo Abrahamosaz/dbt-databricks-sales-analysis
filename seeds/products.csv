@@ -1,0 +1,16 @@
+product_id,product_name,category_id,price,stock_quantity
+1,iPhone 15,3,950000.00,25
+2,Samsung Galaxy S24,3,850000.00,30
+3,Google Pixel 9,3,780000.00,20
+4,MacBook Pro 14,2,2500000.00,10
+5,Dell XPS 15,2,2100000.00,12
+6,Lenovo ThinkPad X1,2,1800000.00,15
+7,Sony WH-1000XM5,1,550000.00,40
+8,Apple AirPods Pro,4,380000.00,50
+9,JBL Bluetooth Speaker,4,180000.00,60
+10,Anker Power Bank,4,95000.00,100
+11,"Samsung 55\" TV",1,900000.00,15
+12,"LG Smart TV 50\"",1,720000.00,18
+13,LG Refrigerator,5,1100000.00,8
+14,Samsung Microwave,5,280000.00,20
+15,Nexus Blender,5,120000.00,35

@@ -1,0 +1,16 @@
+customer_id,first_name,last_name,email,city,country,signup_date
+1,John,Adebayo,john.adebayo@example.com,Lagos,Nigeria,2025-01-15
+2,Sarah,Okafor,sarah.okafor@example.com,Abuja,Nigeria,2025-02-03
+3,Michael,Eze,michael.eze@example.com,Port Harcourt,Nigeria,2025-02-18
+4,Grace,Bello,grace.bello@example.com,Lagos,Nigeria,2025-03-01
+5,David,Ogunleye,david.ogunleye@example.com,Ibadan,Nigeria,2025-03-12
+6,Mary,Okoro,mary.okoro@example.com,Benin City,Nigeria,2025-03-25
+7,Daniel,Adeyemi,daniel.adeyemi@example.com,Lagos,Nigeria,2025-04-10
+8,Jennifer,Ibrahim,jennifer.ibrahim@example.com,Kano,Nigeria,2025-04-22
+9,Samuel,Nwosu,samuel.nwosu@example.com,Enugu,Nigeria,2025-05-05
+10,Esther,Balogun,esther.balogun@example.com,Ibadan,Nigeria,2025-05-18
+11,Paul,Chukwu,paul.chukwu@example.com,Lagos,Nigeria,2025-06-02
+12,Rebecca,Yusuf,rebecca.yusuf@example.com,Abuja,Nigeria,2025-06-20
+13,Emmanuel,Ike,emmanuel.ike@example.com,Owerri,Nigeria,2025-07-01
+14,Linda,Akinola,linda.akinola@example.com,Lagos,Nigeria,2025-07-14
+15,Christopher,Umeh,christopher.umeh@example.com,Onitsha,Nigeria,2025-08-01
