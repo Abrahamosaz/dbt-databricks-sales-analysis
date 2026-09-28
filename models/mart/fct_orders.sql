@@ -1,6 +1,8 @@
+-- Customer attributes are as they were when the order was placed (SCD type 2).
 select
     o.order_id,
     o.customer_id,
+    c.customer_sk,
     c.city,
     c.country,
     o.ordered_at,
@@ -16,5 +18,7 @@ select
     o.is_first_order,
     o.days_since_previous_order
 from {{ ref('int_customer_orders') }} as o
-left join {{ ref('stg_customers') }} as c
-    on o.customer_id = c.customer_id
+left join {{ ref('stg_customers_history') }} as c
+    on  o.customer_id = c.customer_id
+    and o.ordered_at >= c.valid_from
+    and o.ordered_at <  c.valid_to

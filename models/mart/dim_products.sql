@@ -34,9 +34,10 @@ select
     coalesce(s.units_sold, 0) / w.window_days                               as avg_daily_units_sold,
     -- Estimate only: stock has no history, so this assumes the historical run rate continues.
     p.stock_quantity / nullif(s.units_sold / w.window_days, 0)              as estimated_days_of_cover
-from {{ ref('stg_products') }} as p
+from {{ ref('stg_products_history') }} as p
 left join {{ ref('stg_categories') }} as c
     on p.category_id = c.category_id
 left join sales as s
     on p.product_id = s.product_id
 cross join sales_window as w
+where p.is_current

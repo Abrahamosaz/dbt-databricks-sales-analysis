@@ -30,6 +30,44 @@ models:
               arguments:
                 allow_zero: true
 
+  - name: stg_customers_history
+    description: >
+      Customer versions from the scd_customers snapshot (SCD type 2). One row per
+      customer per version. Join facts on customer_id and valid_from <= ordered_at < valid_to.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: [customer_id, valid_from]
+    columns:
+      - name: customer_sk
+        description: Surrogate key for the customer version (dbt_scd_id).
+        data_tests: [unique, not_null]
+      - name: valid_from
+        description: Start of the version; the first version per customer starts at 1900-01-01.
+      - name: valid_to
+        description: End of the version (exclusive); 9999-12-31 for the current version.
+      - name: is_current
+        description: True for the latest version of the customer.
+
+  - name: stg_products_history
+    description: >
+      Product versions from the scd_products snapshot (SCD type 2). One row per
+      product per version. Join facts on product_id and valid_from <= ordered_at < valid_to.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            columns: [product_id, valid_from]
+    columns:
+      - name: product_sk
+        description: Surrogate key for the product version (dbt_scd_id).
+        data_tests: [unique, not_null]
+      - name: valid_from
+        description: Start of the version; the first version per product starts at 1900-01-01.
+      - name: valid_to
+        description: End of the version (exclusive); 9999-12-31 for the current version.
+      - name: is_current
+        description: True for the latest version of the product.
+
   - name: stg_order_items
     description: Order line items with local-time fields and line revenue. One row per order item.
     columns:

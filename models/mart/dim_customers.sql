@@ -32,9 +32,10 @@ customers as (
         s.avg_days_between_orders,
         s.customer_id is not null                                       as has_ordered,
         coalesce(s.lifetime_orders, 0) > 1                              as is_repeat_customer
-    from {{ ref('stg_customers') }} as c
+    from {{ ref('stg_customers_history') }} as c
     left join order_stats as s
         on c.customer_id = s.customer_id
+    where c.is_current
 
 ),
 

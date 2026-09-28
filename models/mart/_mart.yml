@@ -22,14 +22,23 @@ models:
               arguments:
                 to: ref('dim_products')
                 field: product_id
+      - name: product_sk
+        description: Product version valid when the order was placed (key into stg_products_history).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products_history')
+                field: product_sk
       - name: category_id
+        description: Product category at the time of the order.
         data_tests: [not_null]
       - name: order_month
         description: First day of the order month in the reporting timezone.
       - name: unit_price
         description: Price paid per unit (NGN). Use this, not list_price, for revenue.
       - name: list_price
-        description: Current catalog price (NGN), for comparison with unit_price.
+        description: Catalog price at the time of the order (NGN), for comparison with unit_price.
       - name: line_revenue
         description: quantity * unit_price (NGN).
 
@@ -45,6 +54,18 @@ models:
               arguments:
                 to: ref('dim_customers')
                 field: customer_id
+      - name: customer_sk
+        description: Customer version valid when the order was placed (key into stg_customers_history).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers_history')
+                field: customer_sk
+      - name: city
+        description: Customer city at the time of the order.
+      - name: country
+        description: Customer country at the time of the order.
       - name: order_revenue
         description: Sum of line revenue on the order (NGN).
         data_tests: [positive_value]
